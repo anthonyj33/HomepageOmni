@@ -59,6 +59,7 @@ Commands are prefixed with `:`.
 - `:hide` - Hide all links by default
 - `:clockmode {12|24}` - Set clocks to 12-hour or 24-hour format
 - `:showseconds {true|false}` - Enable or disable seconds on clocks (omit argument to toggle)
+- `:bookmark {Omni prefix}` - Create Firefox bookmarks for `:`, `+`, `-`, `=` and optionally your own omni keyword, ready for manual keyword assignment in Firefox
 - `:export` - Export/save the configuration to a .json file
 - `:import` - Import/load the configuration from a .json file
 - `:resetconfig` - Reset the entire configuration (useful if corrupted)
@@ -73,6 +74,27 @@ Web searches are prefixed with `-`.
 
 Templates (see below) are prefixed with `+`.
 - `+mytemplate 1` - If you configured it, this will open a specified URL with the argument 1
+
+## Firefox Address Bar Integration
+
+You can use Homepage Omni directly from the Firefox address bar by generating the correct bookmark URLs from inside Homepage Omni, then assigning Firefox keywords to those bookmarks.
+
+### Setup Instructions
+
+1. Open Homepage Omni in Firefox.
+2. Run `:bookmark <Omni prefix>` in the omnibar.
+3. Homepage Omni creates bookmarks for `:`, `+`, `-`, `=`, and your chosen link prefix inside a `Homepage Omni` bookmark folder using the current extension URL.
+4. Open the bookmarks in that folder in Firefox bookmark properties and assign the keywords `:`, `+`, `-`, `=`, and your chosen Omni prefix manually.
+
+### Examples
+*Note: When using the address bar, a space is required after the prefix.*
+
+- `+ mytemplate 1` - Opens the `mytemplate` template with the argument `1`
+- `- best coffee near me` - Searches for `best coffee near me` in your search engine of choice
+- `= github.com` - Opens the URL `=github.com`
+- `<Omni prefix> spotify` - Opens Homepage Omni, searches for or opens the "Spotify" link
+
+The URLs are always generated with the current extension URL, but this may change between installs. If the bookmarks stop working, re-generate them using the `:bookmark` command. Be sure to re-configure the keywords.
 
 ## Configuration file
 
