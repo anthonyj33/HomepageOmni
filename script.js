@@ -793,13 +793,40 @@ function updateClock() {
 	}
 }
 
-// Update each second (only if the page is visible)
-setInterval(() => {
+let clockTickTimeoutId = null;
+function scheduleNextClockTick() {
+	const now = Date.now();
+	const delayMs = 1000 - (now % 1000) || 1000;
+	clockTickTimeoutId = setTimeout(() => {
+		if (!document.hidden) {
+			updateClock();
+		}
+		scheduleNextClockTick();
+	}, delayMs);
+}
+
+function resyncClockTicker() {
+	if (clockTickTimeoutId !== null) {
+		clearTimeout(clockTickTimeoutId);
+		clockTickTimeoutId = null;
+	}
 	if (!document.hidden) {
 		updateClock();
 	}
-}, 1000);
+	scheduleNextClockTick();
+}
 
+document.addEventListener("visibilitychange", () => {
+	if (!document.hidden) {
+		resyncClockTicker();
+	}
+});
+
+// First time loading the page
+sortLinks();
+updateFiltered("");
+render();
+resyncClockTicker();
 // Load config from storage, if possible
 // (This will also handle Firefox bookmark keyword integration after config loads)
 loadConfig();
