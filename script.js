@@ -33,6 +33,8 @@ const CONFIG_DEFAULT = {
 	"event_display_duration_mins": 60,
 	// Clocks (by default, only show clock 1)
 	"clock1_name": "",
+	"clock_use_24h": true,
+	"clock_show_seconds": false,
 	"clock2_name": "hidden",
 	"clock2_utc_offset": 0,
 	"clock3_name": "hidden",
@@ -158,6 +160,34 @@ function processInput(new_value) {
 		} else if (new_value == ":hide") {
 			config.display_when_empty = false;
 			saveConfig();
+		} else if (new_value.startsWith(":clockmode")) {
+			const mode = new_value.substring(10).trim().toLowerCase();
+			if (mode === "24" || mode === "24h") {
+				config.clock_use_24h = true;
+			} else if (mode === "12" || mode === "12h") {
+				config.clock_use_24h = false;
+			} else {
+				error_text = "Usage: :clockmode {12|24}";
+				return false;
+			}
+			saveConfig();
+			updateClock();
+			return true;
+		} else if (new_value.startsWith(":showseconds")) {
+			const value = new_value.substring(12).trim().toLowerCase();
+			if (value === "") {
+				config.clock_show_seconds = !config.clock_show_seconds;
+			} else if (value === "true") {
+				config.clock_show_seconds = true;
+			} else if (value === "false") {
+				config.clock_show_seconds = false;
+			} else {
+				error_text = "Usage: :showseconds {true|false}";
+				return false;
+			}
+			saveConfig();
+			updateClock();
+			return true;
 		} else if (new_value.startsWith(":delete")) {
 			// Delete
 			return deleteLink(new_value.substring(7).trim());
@@ -298,6 +328,12 @@ function updateFiltered(new_value) {
 	if (error_text.length > 0) {
 		helptext.className = "error";
 		helptext.innerText = error_text;
+	} else if (new_value.startsWith(":clockmode")) {
+		helptext.className = "normal";
+		helptext.innerText = "Set clock format (ex. :clockmode 12 or :clockmode 24)";
+	} else if (new_value.startsWith(":showseconds")) {
+		helptext.className = "normal";
+		helptext.innerText = "Toggle or set seconds (ex. :showseconds, :showseconds true, :showseconds false)";
 	} else if (new_value.startsWith(":") && helptext.innerText == "") {
 		helptext.className = "normal";
 		helptext.innerText = "Enter a command (ex. :set, :delete)";
@@ -498,14 +534,33 @@ function padTime(time) {
 
 // Render a specific clock given its ID, a date, a region name, and whether to use UTC (for global clocks)
 function renderClock(clockid, d, region, useUTC) {
-	const hours = useUTC ? d.getUTCHours() : d.getHours();
+	const hours24 = useUTC ? d.getUTCHours() : d.getHours();
 	const minutes = useUTC ? d.getUTCMinutes() : d.getMinutes();
+	const seconds = useUTC ? d.getUTCSeconds() : d.getSeconds();
 	const fullYear = useUTC ? d.getUTCFullYear() : d.getFullYear();
 	const month = useUTC ? d.getUTCMonth() : d.getMonth();
 	const date = useUTC ? d.getUTCDate() : d.getDate();
 	const day = useUTC ? d.getUTCDay() : d.getDay();
+	const use24Hour = config.clock_use_24h !== false;
+	const showSeconds = config.clock_show_seconds === true;
 
-	const timeRender = `${padTime(hours)}:${padTime(minutes)}`;
+	let timeRender = "";
+	if (use24Hour) {
+		timeRender = `${padTime(hours24)}:${padTime(minutes)}`;
+		if (showSeconds) {
+			timeRender += `:${padTime(seconds)}`;
+		}
+	} else {
+		let hours12 = hours24 % 12;
+		if (hours12 == 0) hours12 = 12;
+		const ampm = hours24 >= 12 ? "PM" : "AM";
+		timeRender = `${hours12}:${padTime(minutes)}`;
+		if (showSeconds) {
+			timeRender += `:${padTime(seconds)}`;
+		}
+		timeRender += ` ${ampm}`;
+	}
+
 	const dateRender = `${fullYear}/${padTime(month + 1)}/${padTime(date)} - ${weekdays[day]}`;
 
 	document.getElementById("clockitem" + clockid).style.display = "inline";

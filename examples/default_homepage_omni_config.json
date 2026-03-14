@@ -21,6 +21,8 @@
 	"events": [],
 	"event_display_duration_mins": 60,
 	"clock1_name": "",
+	"clock_use_24h": true,
+	"clock_show_seconds": false,
 	"clock2_name": "hidden",
 	"clock2_utc_offset": 0,
 	"clock3_name": "hidden",

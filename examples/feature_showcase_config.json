@@ -61,6 +61,8 @@
 	],
 	"event_display_duration_mins": 120,
 	"clock1_name": "Local",
+	"clock_use_24h": true,
+	"clock_show_seconds": false,
 	"clock2_name": "🌍GMT",
 	"clock2_utc_offset": 0,
 	"clock3_name": "🗼Tokyo",

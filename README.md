@@ -57,6 +57,8 @@ Commands are prefixed with `:`.
 - `:delete {link name}` - Delete the link with the given name
 - `:show` - Show all links by default (when the omnibar is empty)
 - `:hide` - Hide all links by default
+- `:clockmode {12|24}` - Set clocks to 12-hour or 24-hour format
+- `:showseconds {true|false}` - Enable or disable seconds on clocks (omit argument to toggle)
 - `:export` - Export/save the configuration to a .json file
 - `:import` - Import/load the configuration from a .json file
 - `:resetconfig` - Reset the entire configuration (useful if corrupted)
@@ -121,6 +123,8 @@ Event object format example (creates an event Lunch Time at 12:25pm repeating ea
 - `clock2_utc_offset` - the UTC offset of the second clock (ex. for Tokyo, which is UTC+9, use `+9`)
 - `clock3_name` - the name of the third clock (right) (default `"hidden"`)
 - `clock3_utc_offset` - the UTC offset of the third clock
+- `clock_use_24h` - bool (default `true`; if `false`, clocks use 12-hour time with AM/PM)
+- `clock_show_seconds` - bool (default `false`; if `true`, clocks include seconds)
 
 If you set the name of a clock to be `"hidden"`, it will not appear; to hide all clocks, set them all to `"hidden"`.
 
