@@ -1,7 +1,7 @@
 {
 	"name": "Homepage Omni",
 	"author": "Cadecraft",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "A custom homepage/new tab page for using quick links with an omnibar",
 	"manifest_version": 3,
 	"chrome_url_overrides": {

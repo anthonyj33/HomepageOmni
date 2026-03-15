@@ -57,9 +57,9 @@ Commands are prefixed with `:`.
 - `:delete {link name}` - Delete the link with the given name
 - `:show` - Show all links by default (when the omnibar is empty)
 - `:hide` - Hide all links by default
+- `:bookmark {Omni prefix}` - Create Firefox bookmarks for `:`, `+`, `-`, `=` and optionally your own omni keyword, ready for manual keyword assignment in Firefox
 - `:clockmode {12|24}` - Set clocks to 12-hour or 24-hour format
 - `:showseconds {true|false}` - Enable or disable seconds on clocks (omit argument to toggle)
-- `:bookmark {Omni prefix}` - Create Firefox bookmarks for `:`, `+`, `-`, `=` and optionally your own omni keyword, ready for manual keyword assignment in Firefox
 - `:export` - Export/save the configuration to a .json file
 - `:import` - Import/load the configuration from a .json file
 - `:resetconfig` - Reset the entire configuration (useful if corrupted)
@@ -184,8 +184,8 @@ You can use Homepage Omni directly from the Firefox address bar by generating th
 
 1. Open Homepage Omni in Firefox.
 2. Run `:bookmark <Omni prefix>` in the omnibar.
-3. Homepage Omni creates bookmarks for `:`, `+`, `-`, `=`, and your chosen link prefix inside a `Homepage Omni` bookmark folder using the current extension URL.
-4. Open the bookmarks in that folder in Firefox bookmark properties and assign the keywords `:`, `+`, `-`, `=`, and your chosen Omni prefix manually.
+    - Homepage Omni creates bookmarks for `:`, `+`, `-`, `=`, and your chosen link prefix inside a `Homepage Omni` bookmark folder using the current extension URL.
+4. Open the bookmarks in that folder in Firefox bookmark properties and assign the [keywords](https://support.mozilla.org/en-US/kb/bookmarks-firefox#w_how-to-use-keywords-with-bookmarks) `:`, `+`, `-`, `=`, and your chosen Omni prefix manually.
 
 ### Examples
 *Note: When using the address bar, a space is required after the prefix.*

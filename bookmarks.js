@@ -23,13 +23,7 @@ function validateBookmarkPrefix(prefixArgument) {
 	};
 }
 
-async function recreateBookmark(title, url) {
-	const existing = await extension_api.bookmarks.search(title);
-	for (const bookmark of existing) {
-		if (bookmark.title === title && typeof bookmark.url === "string") {
-			await extension_api.bookmarks.remove(bookmark.id);
-		}
-	}
+async function createBookmark(title, url) {
 	const folderId = await ensureBookmarkFolder();
 	await extension_api.bookmarks.create({
 		parentId: folderId,
@@ -40,10 +34,9 @@ async function recreateBookmark(title, url) {
 
 async function ensureBookmarkFolder() {
 	const existing = await extension_api.bookmarks.search("Homepage Omni");
-	for (const bookmark of existing) {
-		if (bookmark.title === "Homepage Omni" && typeof bookmark.url !== "string") {
-			return bookmark.id;
-		}
+	const matchingFolder = existing.find((bookmark) => bookmark.title === "Homepage Omni" && typeof bookmark.url !== "string");
+	if (matchingFolder) {
+  		return matchingFolder.id;
 	}
 
 	const folder = await extension_api.bookmarks.create({
@@ -58,10 +51,7 @@ async function createBookmarkShortcuts(rawPrefixArgument) {
 	}
 
     await browser.permissions.request({ permissions: ["bookmarks"] }).catch();
-    granted = await browser.permissions.getAll().then((permissions) => {
-        if (permissions?.permissions?.includes("bookmarks")) { return true }
-        return false;
-    });
+    const granted = await browser.permissions.getAll().then((permissions) => permissions?.permissions?.includes("bookmarks"));
     if (!granted || !extension_api?.bookmarks?.create) {
         error_text = "Permission to create bookmarks was denied.";
         updateFiltered(omnibar.value);
@@ -70,13 +60,18 @@ async function createBookmarkShortcuts(rawPrefixArgument) {
 
 
 	const trimmedArgument = rawPrefixArgument.trim();
-	let omniPrefix = null;
     const validation = validateBookmarkPrefix(trimmedArgument);
     if (!validation.valid) {
         error_text = validation.message;
         return false;
     }
-    omniPrefix = validation.value;
+    const omniPrefix = validation.value;
+
+	const folderId = await ensureBookmarkFolder();
+	const children = await extension_api.bookmarks.getChildren(folderId);
+	for (const child of children) {
+		await extension_api.bookmarks.remove(child.id);
+	}
 
 	const runtimeUrl = extension_api.runtime.getURL("homepage.html?q=%s");
 	const createdPrefixes = [];
@@ -85,20 +80,18 @@ async function createBookmarkShortcuts(rawPrefixArgument) {
 	for (const prefix of native_bookmark_prefixes) {
 		const bookmarkUrl = runtimeUrl.replace("%s", `${encodeURIComponent(prefix)}%s`);
 		try {
-			await recreateBookmark(`Homepage Omni (${prefix})`, bookmarkUrl);
+			await createBookmark(`Homepage Omni (${prefix})`, bookmarkUrl);
 			createdPrefixes.push(prefix);
 		} catch (_error) {
 			skippedPrefixes.push(prefix);
 		}
 	}
 
-	if (trimmedArgument.length > 0) {
-		try {
-			await recreateBookmark(`Homepage Omni (${omniPrefix})`, runtimeUrl);
-			createdPrefixes.push(omniPrefix);
-		} catch (_error) {
-			skippedPrefixes.push(omniPrefix);
-		}
+	try {
+		await createBookmark(`Homepage Omni (${omniPrefix})`, runtimeUrl);
+		createdPrefixes.push(omniPrefix);
+	} catch (_error) {
+		skippedPrefixes.push(omniPrefix);
 	}
 
 	if (createdPrefixes.length === 0) {

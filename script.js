@@ -1,6 +1,5 @@
 // Homepage Omni
 // Cadecraft
-// v1.0.0; 2025/12/25
 
 /* TODO:
 	Feat: allow changing your search engine
@@ -162,6 +161,10 @@ function populateTemplate(templateString, args) {
 
 // Process entered input and return whether successful
 function processInput(new_value) {
+	// Allow (ignore) one space after the prefix
+    if (new_value[1] === " ") {
+        new_value = new_value[0] + new_value.substring(2);
+    }
 	// Determine type by first character
 	if (new_value.startsWith(":")) {
 		// Command
@@ -221,7 +224,7 @@ function processInput(new_value) {
 			config = structuredClone(CONFIG_DEFAULT);
 			saveConfig();
 			return true;
-		} else if (new_value === ":bookmark" || new_value.startsWith(":bookmark ")) {
+		} else if (new_value.startsWith(":bookmark")) {
 			createBookmarkShortcuts(new_value.substring(9));
 			return true;
 		} else if (new_value.startsWith(":help")) {
@@ -680,7 +683,7 @@ function updateClock() {
 let clockTickTimeoutId = null;
 function scheduleNextClockTick() {
 	const now = Date.now();
-	const delayMs = 1000 - (now % 1000) || 1000;
+	const delayMs = 1000 - (now % 1000);
 	clockTickTimeoutId = setTimeout(() => {
 		if (!document.hidden) {
 			updateClock();
@@ -711,7 +714,5 @@ sortLinks();
 updateFiltered("");
 render();
 resyncClockTicker();
-// Load config from storage, if possible
-// (This will also handle Firefox bookmark keyword integration after config loads)
 // Load config from storage if possible, then update with that config
 loadConfig();
